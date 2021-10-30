@@ -9,3 +9,6 @@
 
 ## Notes
 このSkriptファイルを使用するには、**SkQuery**が必要です！
+
+## Link
+[YouTube](https://www.youtube.com)
