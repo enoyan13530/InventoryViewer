@@ -1,0 +1,138 @@
+#=============================================================
+#=============================================================
+#
+#                   Skript:InventoryViewer
+#                       作成者：enoyan
+#                           ver.1.0
+#
+#=============================================================
+#=============================================================
+
+#【説明】
+# 相手のインベントリの中身を見ることができます
+#
+#【使用アドオン】
+#・SkQuery
+#
+#【使用方法】
+#
+#・コマンド
+# /inventoryviewer <player>
+#
+#・コマンド省略
+# /inview
+
+
+options:
+    permission: skript.inventoryviewer
+    # パーミッションをここに記述してください。変更しない場合はいじらなくても大丈夫です。
+    # 初期値：skript.inventoryviewer
+
+    prefix: &8[&4&lInventoryViewer&r&8]&f
+    # GUIの名前やコマンドを実行する時のprefixを変更できます。
+
+    prefix_boolean: true
+    # prefixを表示するかどうかを設定できます。trueまたはfalseを記述してください。
+    # 初期値：true
+
+    send_format: &r
+    # メッセージのカラーコードの設定ができます。変更しない場合はいじらなくても大丈夫です。
+    # 初期値：&r
+
+    item: diamond hoe
+    # アイテムを変更できます。アイテムを変更する際は英語で入力してください。
+    # 初期値：diamond hoe
+
+    item_name: &r&lClick Player!
+    # アイテムの名前を変更できます。カラーコードも使用できます。
+    # 初期値：&r&lClick Player!
+
+#コマンド
+command /inventoryviewer [<player>]:
+    description: プレイヤーのインベントリを見ることができます
+    usage: /inventoryviewer <player>
+    aliases: /inview
+    executable by: player
+    trigger:
+        if player doesn't have permission "{@permission}":
+            ISend("あなたは権限がないため実行できません",player)
+            stop
+
+        if arg-1 is set:
+            set {_player} to arg-1
+            
+            inventoryview(arg-1,player)
+
+        else:
+            if player doesn't have {@item} named "{@item_name}":
+                give player 1 {@item} named "{@item_name}"
+                ISend("{@item}でプレイヤーを右クリックしてください",player)
+            else:
+                ISend("アイテムをすでに所有しています",player)
+
+#イベント    
+on inventory click:
+    if name of clicked inventory is "{@prefix}":
+        cancel event
+        if event-item is red wool named "&r閉じる":
+            close player's inventory
+
+on rightclick:
+    if player have {@item} named "{@item_name}":
+        cancel event
+
+on damage of player:
+    if attacker have {@item} named "{@item_name}":
+        cancel event
+
+on rightclick on player:
+    set {_player} to entity
+    if player have {@item} named "{@item_name}":
+        cancel event
+        inventoryview({_player},player)
+        #send "%{_player}%" to player
+
+#関数
+function ISend(text:text,player:player):
+    if {@prefix_boolean}:
+        send "{@prefix}{@send_format}%{_text}%" to {_player}
+    else:
+        send "{@send_format}%{_text}%" to {_player}
+
+function inventoryview(player:player, p:player):
+    set {_boolean} to false
+    loop all players:
+        if loop-player = {_player}:
+            set {_boolean} to true
+    
+    if {_boolean}:
+        #add all items in {_player}'s inventory to {inventoryviewer::inv::%player%::*}
+
+        loop integers between 0 and 41:
+            add slot loop-integers of {_player} to {inventoryviewer::inv::%{_p}%::*}
+
+        open chest inventory with 6 rows named "{@prefix}" to {_p}
+
+        set {_count} to 0
+        set {_count1} to 10
+        set {_count2} to 1
+        loop 27 time:
+            set slot {_count} of {_p}'s current inventory to {inventoryviewer::inv::%{_p}%::%{_count1}%}
+            add 1 to {_count}
+            add 1 to {_count1}
+            add 1 to {_count2}
+        set {_count1} to 1
+        loop 9 time:
+            set slot {_count} of {_p}'s current inventory to {inventoryviewer::inv::%{_p}%::%{_count1}%}
+            add 1 to {_count}
+            add 1 to {_count1}
+            add 1 to {_count2}
+        loop 5 time:
+            set slot {_count} of {_p}'s current inventory to {inventoryviewer::inv::%{_p}%::%{_count2}%}
+            add 2 to {_count}
+            add 1 to {_count2}
+        set slot 45 of {_p}'s current inventory to compass named "&r%{_player}%"
+        set slot 53 of {_p}'s current inventory to red wool named "&r閉じる"
+        
+        clear {inventoryviewer::inv::%{_p}%::*}
+        clear {inventoryviewer::air::inv::%{_p}%::*}
