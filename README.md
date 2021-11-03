@@ -4,7 +4,7 @@
 プレイヤーのインベントリをGUIを使用して閲覧することができます。
 
 ## Usage
-- コマンド:/inventoryviewer <player>
+- コマンド:/inventoryviewer
 - 短縮:/inview
 
 ## Notes
