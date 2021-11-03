@@ -4,11 +4,12 @@
 プレイヤーのインベントリをGUIを使用して閲覧することができます。
 
 ## Usage
-- コマンド:/inventoryviewer
+- コマンド:/inventoryviewer <player>
 - 短縮:/inview
 
 ## Notes
 このSkriptファイルを使用するには、**SkQuery**が必要です！
 
 ## Link
-[YouTube](https://www.youtube.com)
+[ここから](https://www.youtube.com/watch?v=3YCMrE2XWwA)詳しい解説をしています。
+動画内容はふざけてますが、GUIの見た目などを見ることができます。
