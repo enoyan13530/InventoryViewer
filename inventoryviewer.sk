@@ -3,7 +3,7 @@
 #
 #                   Skript:InventoryViewer
 #                       作成者：enoyan
-#                           ver.1.1
+#                           ver.1.1.1
 #
 #=============================================================
 #=============================================================
@@ -25,8 +25,15 @@
 
 options:
     permission: skript.inventoryviewer
-    # パーミッションをここに記述してください。変更しない場合はいじらなくても大丈夫です。
+    # パーミッションをここに記述してください。
+    #基本いじらなくても大丈夫ですが、変更したい場合は記述方法に気を付けて変更してください。
     # 初期値：skript.inventoryviewer
+
+    permission_boolean: true
+    #パーミッションの権限を使用するかどうかを設定できます。
+    #無効にすると、すべてのプレイヤーがコマンドなどの実行ができるようになります。
+    #trueまたはfalseを記述してください。
+    #初期値：true
 
     prefix: &8[&4&lInventoryViewer&r&8]&f
     # GUIの名前やコマンドを実行する時のprefixを変更できます。
@@ -54,7 +61,7 @@ command /inventoryviewer [<player>]:
     aliases: /inview
     executable by: player
     trigger:
-        if player doesn't have permission "{@permission}":
+        if !PermissionChecker(player):
             ISend("あなたは権限がないため実行できません",player)
             stop
 
@@ -82,23 +89,42 @@ on rightclick:
         cancel event
 
 on damage of player:
+    attacker is player
     if attacker have {@item} named "{@item_name}":
         cancel event
+        set {_player} to victim
+        if !PermissionChecker(attacker):
+            ISend("あなたは権限がないため実行できません",attacker)
+            stop
+        inventoryview({_player},attacker)
 
 on rightclick on player:
     set {_player} to entity
     if player have {@item} named "{@item_name}":
         cancel event
+        if !PermissionChecker(player):
+            ISend("あなたは権限がないため実行できません",player)
+            stop
         inventoryview({_player},player)
         #send "%{_player}%" to player
 
 #関数
+#メッセージ
 function ISend(text:text,player:player):
     if {@prefix_boolean}:
         send "{@prefix}{@send_format}%{_text}%" to {_player}
     else:
         send "{@send_format}%{_text}%" to {_player}
 
+#パーミッションのチェック
+function PermissionChecker(p:player) :: boolean:
+    if {@permission_boolean}:
+        if {_p} doesn't have permission "{@permission}":
+            #ISend("あなたは権限がないため実行できません",{_p})
+            return false
+    return true
+
+#GUI表示
 function inventoryview(player:player, p:player):
     set {_boolean} to false
     loop all players:
