@@ -3,7 +3,7 @@
 #
 #                   Skript:InventoryViewer
 #                       作成者：enoyan
-#                           ver.1.2.0.1
+#                           ver.1.2.0.2
 #
 #=============================================================
 #=============================================================
@@ -176,14 +176,20 @@ function inventoryview(player:player, p:player):
         if {_count1} >= 1:
             set slot {_count} of {_p}'s current inventory to totem of undying named "&r%{_count1}% totem"
             add 1 to {_count}
-        if {_count2} != 0:
+        if {_count4} = 0:
+            set slot {_count} of {_p}'s current inventory to 64 end crystal named "&r%{_count2}%"
+            add 1 to {_count}
+        else if {_count2} != 0:
             set slot {_count} of {_p}'s current inventory to 64 end crystal named "&r%{_count4}% stack %{_count2}%"
             add 1 to {_count}
         else if {_count2} = 0:
             if {_count4} != 0:
                 set slot {_count} of {_p}'s current inventory to 64 end crystal named "&r%{_count4}% stack"
                 add 1 to {_count}
-        if {_count3} != 0:
+        if {_count5} = 0:
+            set slot {_count} of {_p}'s current inventory to 64 experience bottle named "&r%{_count3}%"
+            add 1 to {_count}
+        else if {_count3} != 0:
             set slot {_count} of {_p}'s current inventory to 64 experience bottle named "&r%{_count5}% stack %{_count3}%"
             add 1 to {_count}
         else if {_count3} = 0:
