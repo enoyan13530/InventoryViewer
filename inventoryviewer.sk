@@ -3,7 +3,7 @@
 #
 #                   Skript:InventoryViewer
 #                       作成者：enoyan
-#                           ver.1.2.1
+#                           ver.1.2.2
 #
 #=============================================================
 #=============================================================
@@ -61,8 +61,8 @@ command /inventoryviewer [<player>]:
     aliases: /inview
     executable by: player
     trigger:
-        if !PermissionChecker(player):
-            ISend("あなたは権限がないため実行できません",player)
+        if !Inview_PermissionCheck(player):
+            Inview_Send("あなたは権限がないため実行できません",player)
             stop
 
         if arg-1 is set:
@@ -73,9 +73,9 @@ command /inventoryviewer [<player>]:
         else:
             if player doesn't have {@item} named "{@item_name}":
                 give player 1 {@item} named "{@item_name}"
-                ISend("{@item}でプレイヤーを右クリックしてください",player)
+                Inview_Send("{@item}でプレイヤーを右クリックしてください",player)
             else:
-                ISend("アイテムをすでに所有しています",player)
+                Inview_Send("アイテムをすでに所有しています",player)
 
 #イベント    
 on inventory click:
@@ -93,8 +93,8 @@ on damage of player:
     if attacker have {@item} named "{@item_name}":
         cancel event
         set {_player} to victim
-        if !PermissionChecker(attacker):
-            ISend("あなたは権限がないため実行できません",attacker)
+        if Inview_PermissionCheck(attacker) = false:
+            Inview_Send("あなたは権限がないため実行できません",attacker)
             stop
         inventoryview({_player},attacker)
 
@@ -102,25 +102,25 @@ on rightclick on player:
     set {_player} to entity
     if player have {@item} named "{@item_name}":
         cancel event
-        if !PermissionChecker(player):
-            ISend("あなたは権限がないため実行できません",player)
+        if Inview_PermissionCheck(player) = false:
+            Inview_Send("あなたは権限がないため実行できません",player)
             stop
         inventoryview({_player},player)
         #send "%{_player}%" to player
 
 #関数
 #メッセージ
-function ISend(text:text,player:player):
-    if {@prefix_boolean}:
+function Inview_Send(text:text,player:player):
+    if {@prefix_boolean} = true:
         send "{@prefix}{@send_format}%{_text}%" to {_player}
     else:
         send "{@send_format}%{_text}%" to {_player}
 
 #パーミッションのチェック
-function PermissionChecker(p:player) :: boolean:
-    if {@permission_boolean}:
+function Inview_PermissionCheck(p:player) :: boolean:
+    if {@permission_boolean} = true:
         if {_p} doesn't have permission "{@permission}":
-            #ISend("あなたは権限がないため実行できません",{_p})
+            #Inview_Send("あなたは権限がないため実行できません",{_p})
             return false
     return true
 
@@ -171,7 +171,11 @@ function inventoryview(player:player, p:player):
             add 1 to {_count5}
         set {_count} to 45
         #set {_count4} to amount of end crystal in {_player}'s inventory
-        set slot {_count} of {_p}'s current inventory to compass named "&r%{_player}%"
+        set {_hp} to {_player}'s health
+        set {_hp} to {_hp} + 10
+        set {_food} to {_player}'s food
+        set {_food} to {_food} + 10
+        set slot {_count} of {_p}'s current inventory to compass named "&r%{_player}%" with lore "Health：%{_hp}%" and "Food：%{_food}%"
         add 1 to {_count}
         if {_count1} >= 1:
             set slot {_count} of {_p}'s current inventory to totem of undying named "&r%{_count1}% totem"
